@@ -22,7 +22,7 @@
  * $Revision:    V1.0.0
  *
  * Project:      Flash Device Description for
- *               STM32H750 W25Q64 SPI Flash
+ *               STM32H750 W25Q128 SPI Flash
  * --------------------------------------------------------------------------- */
 
 #include "..\FlashOS.H"        // FlashOS Structures
@@ -31,10 +31,10 @@
 #ifdef W25Q64JV
 struct FlashDevice const FlashDevice  =  {
    FLASH_DRV_VERS,             // Driver Version, do not modify!
-   "H7PI_W25Q64",  	   // Device Name
+   "H7Card_W25Q128",  	   // Device Name
    EXTSPI,                     // Device Type
    0x90000000,                 // Device Start Address
-   0x00800000,                 // Device Size (8MB)
+   0x01000000,                 // Device Size (8MB)
    4096,                       // Programming Page Size
    0,                          // Reserved, must be 0
    0xFF,                       // Initial Content of Erased Memory

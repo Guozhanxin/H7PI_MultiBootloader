@@ -12,6 +12,44 @@
 //All rights reserved
 ////////////////////////////////////////////////////////////////////////////////
 
+/* QSPI引脚和时钟相关配置宏定义 */
+#define QSPI_CLK_ENABLE()               __HAL_RCC_QSPI_CLK_ENABLE()
+#define QSPI_CLK_DISABLE()              __HAL_RCC_QSPI_CLK_DISABLE()
+#define QSPI_CS_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOB_CLK_ENABLE()
+#define QSPI_CLK_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOB_CLK_ENABLE()
+#define QSPI_BK1_D0_GPIO_CLK_ENABLE()   __HAL_RCC_GPIOD_CLK_ENABLE()
+#define QSPI_BK1_D1_GPIO_CLK_ENABLE()   __HAL_RCC_GPIOD_CLK_ENABLE()
+#define QSPI_BK1_D2_GPIO_CLK_ENABLE()   __HAL_RCC_GPIOE_CLK_ENABLE()
+#define QSPI_BK1_D3_GPIO_CLK_ENABLE()   __HAL_RCC_GPIOD_CLK_ENABLE()
+
+#define QSPI_MDMA_CLK_ENABLE()          __HAL_RCC_MDMA_CLK_ENABLE()
+#define QSPI_FORCE_RESET()              __HAL_RCC_QSPI_FORCE_RESET()
+#define QSPI_RELEASE_RESET()            __HAL_RCC_QSPI_RELEASE_RESET()
+
+#define QSPI_CS_PIN                     GPIO_PIN_6
+#define QSPI_CS_GPIO_PORT               GPIOB
+#define QSPI_CS_GPIO_AF                 GPIO_AF10_QUADSPI
+
+#define QSPI_CLK_PIN                    GPIO_PIN_2
+#define QSPI_CLK_GPIO_PORT              GPIOB
+#define QSPI_CLK_GPIO_AF                GPIO_AF9_QUADSPI
+
+#define QSPI_BK1_D0_PIN                 GPIO_PIN_11
+#define QSPI_BK1_D0_GPIO_PORT           GPIOD
+#define QSPI_BK1_D0_GPIO_AF             GPIO_AF9_QUADSPI
+
+#define QSPI_BK1_D1_PIN                 GPIO_PIN_12
+#define QSPI_BK1_D1_GPIO_PORT           GPIOD
+#define QSPI_BK1_D1_GPIO_AF             GPIO_AF9_QUADSPI
+
+#define QSPI_BK1_D2_PIN                 GPIO_PIN_2
+#define QSPI_BK1_D2_GPIO_PORT           GPIOE
+#define QSPI_BK1_D2_GPIO_AF             GPIO_AF9_QUADSPI
+
+#define QSPI_BK1_D3_PIN                 GPIO_PIN_13
+#define QSPI_BK1_D3_GPIO_PORT           GPIOD
+#define QSPI_BK1_D3_GPIO_AF             GPIO_AF9_QUADSPI
+
 /*----------------------------------------------------------------------------*/
 //如果硬件接线不同，需要改 QSPI_Init 函数！
 /*----------------------------------------------------------------------------*/
@@ -43,9 +81,10 @@ u8 QSPI_Init(void)
 {
 	u32 tempreg=0;
 
-	RCC->AHB4ENR|=1<<0; //??GPIOA??
+//	RCC->AHB4ENR|=1<<0; //??GPIOA??
 	RCC->AHB4ENR|=1<<1; //??GPIOB??
-	RCC->AHB4ENR|=1<<2;	//??GPIOC??
+//	RCC->AHB4ENR|=1<<2;	//??GPIOC??
+	RCC->AHB4ENR|=1<<3;	//??GPIOD??
 	RCC->AHB4ENR|=1<<4;	//??GPIOE??
 	RCC->AHB3ENR|=1<<14; //QSPI????
 
@@ -53,19 +92,26 @@ u8 QSPI_Init(void)
 	GPIO_Set(GPIOB,1<<2,GPIO_MODE_AF,GPIO_OTYPE_PP,GPIO_SPEED_HIGH,GPIO_PUPD_PU);
 	//PB6 QUADSPI1_BK1_NCS
 	GPIO_Set(GPIOB,1<<6,GPIO_MODE_AF,GPIO_OTYPE_PP,GPIO_SPEED_HIGH,GPIO_PUPD_PU);
-	//PC9,PC10 QUADSPI1_BK1_IO0, IO1, 
-	GPIO_Set(GPIOC,1<<9,GPIO_MODE_AF,GPIO_OTYPE_PP,GPIO_SPEED_HIGH,GPIO_PUPD_PU);
-	GPIO_Set(GPIOC,1<<10,GPIO_MODE_AF,GPIO_OTYPE_PP,GPIO_SPEED_HIGH,GPIO_PUPD_PU);
+//	//PC9,PC10 QUADSPI1_BK1_IO0, IO1, 
+//	GPIO_Set(GPIOC,1<<9,GPIO_MODE_AF,GPIO_OTYPE_PP,GPIO_SPEED_HIGH,GPIO_PUPD_PU);
+	//PD11,PD12 QUADSPI1_BK1_IO0, IO1, 
+	GPIO_Set(GPIOD,1<<11,GPIO_MODE_AF,GPIO_OTYPE_PP,GPIO_SPEED_HIGH,GPIO_PUPD_PU);
+	GPIO_Set(GPIOD,1<<12,GPIO_MODE_AF,GPIO_OTYPE_PP,GPIO_SPEED_HIGH,GPIO_PUPD_PU);
+//	//IO3
+//	GPIO_Set(GPIOA,1<<1,GPIO_MODE_AF,GPIO_OTYPE_PP,GPIO_SPEED_HIGH,GPIO_PUPD_PU);
 	//IO3
-	GPIO_Set(GPIOA,1<<1,GPIO_MODE_AF,GPIO_OTYPE_PP,GPIO_SPEED_HIGH,GPIO_PUPD_PU);
+	GPIO_Set(GPIOD,1<<13,GPIO_MODE_AF,GPIO_OTYPE_PP,GPIO_SPEED_HIGH,GPIO_PUPD_PU);
 	//PE2 QUADSPI1_BK1_IO2
 	GPIO_Set(GPIOE, 1<<2,GPIO_MODE_AF,GPIO_OTYPE_PP,GPIO_SPEED_HIGH,GPIO_PUPD_PU);
 
 	GPIO_AF_Set(GPIOB,2,9); //PB2,AF9
  	GPIO_AF_Set(GPIOB,6,10); //PB6,AF10
- 	GPIO_AF_Set(GPIOC,9,9); //PC9,AF9
- 	GPIO_AF_Set(GPIOC,10,9); //PC10,AF9
- 	GPIO_AF_Set(GPIOA,1,9); //Pa1,AF9
+// 	GPIO_AF_Set(GPIOC,9,9); //PC9,AF9
+// 	GPIO_AF_Set(GPIOC,10,9); //PC10,AF9
+ 	GPIO_AF_Set(GPIOD,11,9); //PC9,AF9
+ 	GPIO_AF_Set(GPIOD,12,9); //PC10,AF9
+// 	GPIO_AF_Set(GPIOA,1,9); //Pa1,AF9
+    GPIO_AF_Set(GPIOD,13,9); //Pa1,AF9
  	GPIO_AF_Set(GPIOE,2,9); //PE2,AF9
 
 	RCC->AHB3RSTR|=1<<14; //复位QSPI
@@ -79,7 +125,7 @@ u8 QSPI_Init(void)
 		tempreg|=0<<6;			//禁止双闪存模式
 		tempreg|=1<<4;			//采样移位半个周期(DDR模式下,必须设置为0)
 		QUADSPI->CR=tempreg;	//设置CR寄存器
-		tempreg=(23-1)<<16;		//设置FLASH大小为2^23=8MB
+		tempreg=(24-1)<<16;		//设置FLASH大小为2^24=16MB
 		tempreg|=(5-1)<<8;		//片选高电平时间为5个时钟(10*5=50ns),即手册里面的tSHSL参数
 		tempreg|=1<<0;			//Mode3,空闲时CLK为高电平
 		QUADSPI->DCR=tempreg;	//设置DCR寄存器
